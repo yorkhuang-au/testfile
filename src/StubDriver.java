@@ -1,27 +1,32 @@
 
+import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import org.apache.hadoop.util.GenericOptionsParser;
 
 public class StubDriver {
 
 	public static void main(String[] args) throws Exception {
 
 		/*
-		 * Validate that two arguments were passed from the command line.
+		 * Instantiate a Job object for your job's configuration.
 		 */
-		if (args.length != 2) {
-			System.out.printf("Usage: StubDriver <input dir> <output dir>\n");
-			System.exit(-1);
-		}
-
+		Configuration conf = new Configuration();
+	    GenericOptionsParser optionParser = new GenericOptionsParser(conf, args);
+	    
+	    String[] remainingArgs = optionParser.getRemainingArgs();
+	    if (remainingArgs.length != 2 ) {
+	    	System.err.println("Usage: StubDriver <in> <out> ");
+			System.exit(2);
+	    }	    
 		/*
 		 * Instantiate a Job object for your job's configuration.
 		 */
-		Job job = new Job( );
+	    Job job = Job.getInstance(conf, "StudDriver");
 
 		/*
 		 * Specify the jar file that contains your driver, mapper, and reducer.
@@ -42,8 +47,8 @@ public class StubDriver {
 		job.setOutputKeyClass(Text.class);
 		job.setOutputValueClass(IntWritable.class);
 		
-		FileInputFormat.addInputPath(job, new Path(args[0]));
-		FileOutputFormat.setOutputPath(job, new Path(args[1]));
+		FileInputFormat.addInputPath(job, new Path(remainingArgs[0]));
+		FileOutputFormat.setOutputPath(job, new Path(remainingArgs[1]));
 
 		job.setMapperClass(StubMapper.class);
 		job.setReducerClass(StubReducer.class);

@@ -4,10 +4,11 @@ import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.util.GenericOptionsParser;
 
-public class NLDriver {
+public class CDataDriver {
 
 	public static void main(String[] args) throws Exception {
 
@@ -19,34 +20,36 @@ public class NLDriver {
 	    
 	    String[] remainingArgs = optionParser.getRemainingArgs();
 	    if (remainingArgs.length != 2 ) {
-	    	System.err.println("Usage: StubDriver <in> <out> ");
+	    	System.err.println("Usage: CDataDriver <in> <out>");
 			System.exit(2);
 	    }	    
 		/*
 		 * Instantiate a Job object for your job's configuration.
 		 */
-	    Job job = Job.getInstance(conf, "NL");
+	    Job job = Job.getInstance(conf, "CData Driver");
 
 		/*
 		 * Specify the jar file that contains your driver, mapper, and reducer.
 		 * Hadoop will transfer this jar file to nodes in your cluster running
 		 * mapper and reducer tasks.
 		 */
-		job.setJarByClass(NLDriver.class);
+		job.setJarByClass(CDataDriver.class);
 
 		/*
 		 * TODO implement
 		 */
-		job.setMapperClass(NLMapper.class);
-		job.setReducerClass(NLReducer.class);
-		job.setCombinerClass(NLReducer.class);
-		job.setOutputKeyClass(Text.class);
-		job.setOutputValueClass(IntWritable.class);
+		job.setMapperClass(CDataMapper.class);
+		job.setReducerClass(CDataReducer.class);
+//		job.setCombinerClass(TextReducer.class);
+
+		job.setOutputKeyClass(CKey.class);
+//		job.setOutputKeyClass(Text.class);
+		job.setOutputValueClass(CData.class);
 	
 		FileInputFormat.addInputPath(job, new Path(remainingArgs[0]));
 		FileOutputFormat.setOutputPath(job, new Path(remainingArgs[1]));
 		
-		job.setInputFormatClass(NLinesInputFormat.class);
+		job.setInputFormatClass(TextInputFormat.class);
 
 		/*
 		 * Start the MapReduce job and wait for it to finish. If it finishes
