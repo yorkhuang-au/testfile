@@ -9,10 +9,10 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
-import org.apache.hadoop.mapred.FileSplit;
 import org.apache.hadoop.mapreduce.InputSplit;
 import org.apache.hadoop.mapreduce.RecordReader;
 import org.apache.hadoop.mapreduce.TaskAttemptContext;
+import org.apache.hadoop.mapreduce.lib.input.FileSplit;
 
 /**
  * 
@@ -96,7 +96,38 @@ public class DollarLineRecordReader extends RecordReader<LongWritable, Text> {
 	@Override
 	public boolean nextKeyValue() throws IOException, InterruptedException {
 		// TODO Auto-generated method stub
-		return false;
+		if( key == null) {
+			key = new LongWritable();
+		}
+		
+		key.set(pos);
+		
+		if( value == null) {
+			value = new Text();
+		}
+		int newSize = 0;
+		
+		while(pos < end) {
+			newSize = in.readLine(value,  maxLineLength,  Math.max((int) Math.min(Integer.MAX_VALUE, end - pos), maxLineLength));
+			if( newSize == 0 ) {
+				break;
+			}
+			pos += newSize;
+			
+			if( newSize < maxLineLength) {
+				break;
+			}
+    		// line too long. try again
+			LOG.info("Skipped line of size" + newSize + " at pos " + (pos - newSize));
+		}
+		
+		if( newSize ==0 ) {
+			key = null;
+			value = null;
+			return false;
+		} else {
+			return true;
+		}
 	}
 
 }

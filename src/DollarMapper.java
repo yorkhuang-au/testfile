@@ -6,7 +6,7 @@ import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 
-public class TextMapper extends Mapper<LongWritable, Text, Text, IntWritable> {
+public class DollarMapper extends Mapper<LongWritable, Text, Text, IntWritable> {
 	
   private final static IntWritable one = new IntWritable(1);
   private static Text text = new Text();
@@ -18,15 +18,9 @@ public class TextMapper extends Mapper<LongWritable, Text, Text, IntWritable> {
     /*
      * TODO implement
      */
-	  
-	  StringTokenizer it = new StringTokenizer( value.toString().replaceAll("[^A-Za-z]", " ") );
-	  while(it.hasMoreTokens())
-	  {
-		  text.set(it.nextToken().toLowerCase());
-		  if( !text.toString().isEmpty()) {
-			  context.getCounter(TestCounter.GOOD).increment(1);
-			  context.write(text, one);
-		  }
-	  }
+	  //text.set(value.toString().substring(0, 10));
+	  context.write(value, one);
+
+
   }
 }

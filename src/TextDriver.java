@@ -35,6 +35,7 @@ public class TextDriver {
 		 */
 		job.setJarByClass(TextDriver.class);
 
+		
 		/*
 		 * TODO implement
 		 */
@@ -43,6 +44,9 @@ public class TextDriver {
 		job.setCombinerClass(TextReducer.class);
 		job.setOutputKeyClass(Text.class);
 		job.setOutputValueClass(IntWritable.class);
+		
+		job.setPartitionerClass(TextPartitioner.class);
+		job.setNumReduceTasks(4);
 	
 		FileInputFormat.addInputPath(job, new Path(remainingArgs[0]));
 		FileOutputFormat.setOutputPath(job, new Path(remainingArgs[1]));
@@ -54,6 +58,8 @@ public class TextDriver {
 		 * successfully, return 0. If not, return 1.
 		 */
 		boolean success = job.waitForCompletion(true);
+		
+		System.out.println( job.getCounters().findCounter(TestCounter.GOOD).getName() + " = " + job.getCounters().findCounter(TestCounter.GOOD).getValue());
 		System.exit(success ? 0 : 1);
 		
 	}

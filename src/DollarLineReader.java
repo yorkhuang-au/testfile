@@ -168,15 +168,35 @@ public class DollarLineReader {
   }
   
   public static void main(String[] args) throws Exception {
+	  /*
     FileInputStream in = new FileInputStream(args[0]);
     DollarLineReader reader = new DollarLineReader(in);
     Text str = new Text();
     int i=1;
-	while( reader.readLine(str,20) > 0) {
-		System.out.print("Line " + Integer.toString(i) + "=");
+    int a = 0;
+	while( (a = reader.readLine(str)) > 0) {
+		System.out.print("Line " + a + " content=" + i + "=");
     	System.out.println(str.toString());
     	++i;
     }
+    */
+	byte [] bs = new byte[1024*1024];
+	for(int j=0; j< bs.length; ++j) {
+		bs[j] = 'A';
+	}
+	byte [] dol = new byte[1];
+	dol[0] ='$';
+	
+	java.io.FileOutputStream o = new java.io.FileOutputStream("/home/cloudera/workspace/testfile/data/input/dollar/a.txt");
+	for(int j =0; j < 130; ++j) {
+		o.write(bs);
+	}
+	o.write(dol);	
+	for(int j =0; j < 130; ++j) {
+		o.write(bs);
+	}
+	o.close();
+	System.out.println("done");
   }
 
 }
